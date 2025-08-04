@@ -101,6 +101,44 @@ func (p *pwd) SessionNew(ctx context.Context, config types.SessionConfig) (*type
 		return nil, err
 	}
 
+	// AUTO-CREATE SINGLE INSTANCE PER SESSION
+	// Determine image name and instance configuration
+	playground, err := p.storage.PlaygroundGet(s.PlaygroundId)
+	if err != nil {
+		log.Printf("Error getting playground %s: %v\n", s.PlaygroundId, err)
+		return nil, err
+	}
+	
+	imageName := config.ImageName
+	if imageName == "" {
+		imageName = playground.DefaultDinDInstanceImage
+	}
+
+	instanceConfig := types.InstanceConfig{
+		ImageName:      imageName,
+		Privileged:     playground.Privileged,
+		Hostname:       "node1", // Always use node1 for single instance
+		PlaygroundFQDN: s.Host,
+		DindVolumeSize: "5G",
+		Type:           "dind", // Default to DIND type
+	}
+
+	if len(playground.DindVolumeSize) > 0 {
+		instanceConfig.DindVolumeSize = playground.DindVolumeSize
+	}
+
+	// Create the single instance for this session
+	instance, err := p.InstanceNew(s, instanceConfig)
+	if err != nil {
+		log.Printf("Error creating instance for session %s: %v\n", s.Id, err)
+		// Clean up session since instance creation failed
+		p.sessionProvisioner.SessionClose(s)
+		p.storage.SessionDelete(s.Id)
+		return nil, err
+	}
+
+	log.Printf("Auto-created instance %s for session %s\n", instance.Name, s.Id)
+
 	p.setGauges()
 	p.event.Emit(event.SESSION_NEW, s.Id)
 
@@ -188,9 +226,11 @@ func (p *pwd) SessionDeployStack(s *types.Session) error {
 
 	s.Ready = false
 	p.event.Emit(event.SESSION_READY, s.Id, false)
-	i, err := p.InstanceNew(s, types.InstanceConfig{ImageName: s.ImageName, PlaygroundFQDN: s.Host, DindVolumeSize: "5G", Privileged: true})
+	
+	// Get the existing single instance for this session
+	i, err := p.InstanceGetSingle(s)
 	if err != nil {
-		log.Printf("Error creating instance for stack [%s]: %s\n", s.Stack, err)
+		log.Printf("Error getting instance for session [%s]: %s\n", s.Id, err)
 		return err
 	}
 

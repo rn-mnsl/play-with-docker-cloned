@@ -45,9 +45,11 @@ func NewInstance(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if playground.MaxInstances > 0 && len(instances) >= playground.MaxInstances {
-		log.Println(err)
+	// ONE SESSION = ONE INSTANCE: Reject if instance already exists
+	if len(instances) > 0 {
+		log.Printf("Session %s already has an instance. One session = one instance policy.\n", s.Id)
 		rw.WriteHeader(http.StatusConflict)
+		fmt.Fprintln(rw, `{"error": "session_already_has_instance", "message": "This session already has an instance. Only one instance per session is allowed."}`)
 		return
 	}
 

@@ -72,6 +72,12 @@ func (m *Mock) InstanceGet(session *types.Session, name string) *types.Instance 
 	args := m.Called(session, name)
 	return args.Get(0).(*types.Instance)
 }
+
+func (m *Mock) InstanceGetSingle(session *types.Session) (*types.Instance, error) {
+	args := m.Called(session)
+	return args.Get(0).(*types.Instance), args.Error(1)
+}
+
 func (m *Mock) InstanceFindBySession(session *types.Session) ([]*types.Instance, error) {
 	args := m.Called(session)
 	return args.Get(0).([]*types.Instance), args.Error(1)

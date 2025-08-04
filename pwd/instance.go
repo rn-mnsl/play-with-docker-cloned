@@ -1,6 +1,7 @@
 package pwd
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -68,6 +69,21 @@ func (p *pwd) InstanceFindBySession(session *types.Session) ([]*types.Instance, 
 		return nil, err
 	}
 	return instances, nil
+}
+
+func (p *pwd) InstanceGetSingle(session *types.Session) (*types.Instance, error) {
+	defer observeAction("InstanceGetSingle", time.Now())
+	instances, err := p.InstanceFindBySession(session)
+	if err != nil {
+		return nil, err
+	}
+	if len(instances) == 0 {
+		return nil, fmt.Errorf("no instance found for session %s", session.Id)
+	}
+	if len(instances) > 1 {
+		log.Printf("Warning: Session %s has %d instances, expected 1. Returning first instance.\n", session.Id, len(instances))
+	}
+	return instances[0], nil
 }
 
 func (p *pwd) InstanceDelete(session *types.Session, instance *types.Instance) error {

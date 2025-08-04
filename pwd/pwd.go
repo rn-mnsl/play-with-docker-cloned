@@ -80,6 +80,7 @@ type PWDApi interface {
 	InstanceUploadFromUrl(instance *types.Instance, fileName, dest, url string) error
 	InstanceUploadFromReader(instance *types.Instance, fileName, dest string, reader io.Reader) error
 	InstanceGet(session *types.Session, name string) *types.Instance
+	InstanceGetSingle(session *types.Session) (*types.Instance, error)  // New: Get the single instance for a session
 	InstanceFindBySession(session *types.Session) ([]*types.Instance, error)
 	InstanceDelete(session *types.Session, instance *types.Instance) error
 	InstanceExec(instance *types.Instance, cmd []string) (int, error)
