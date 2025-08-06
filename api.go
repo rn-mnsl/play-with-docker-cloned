@@ -37,6 +37,7 @@ func main() {
 		task.NewCheckSwarmPorts(e, df),
 		task.NewCheckSwarmStatus(e, df),
 		task.NewCollectStats(e, df, s),
+		task.NewSessionTimer(e, s),
 		task.NewCheckK8sClusterStatus(e, kf),
 		task.NewCheckK8sClusterExposedPorts(e, kf),
 	}
@@ -52,10 +53,22 @@ func main() {
 		log.Fatalf("Cannot parse duration Got: %v", err)
 	}
 
-	playground := types.Playground{Domain: config.PlaygroundDomain, DefaultDinDInstanceImage: "franela/dind", AvailableDinDInstanceImages: []string{"franela/dind"}, AllowWindowsInstances: config.NoWindows, DefaultSessionDuration: d, Extras: map[string]interface{}{"LoginRedirect": "http://localhost:3000"}, Privileged: true}
-	if _, err := core.PlaygroundNew(playground); err != nil {
+	playground := types.Playground{
+		Domain:                      config.PlaygroundDomain,
+		DefaultDinDInstanceImage:    "franela/dind",
+		AvailableDinDInstanceImages: []string{"franela/dind"},
+		AllowWindowsInstances:       config.NoWindows,
+		DefaultSessionDuration:      d,
+		Extras:                      map[string]interface{}{"LoginRedirect": "http://localhost:3000"},
+		Privileged:                  true,
+		Tasks:                       []string{".*"}, // Enable all tasks
+	}
+	log.Printf("DEBUG: Creating playground with domain: %s\n", playground.Domain)
+	createdPlayground, err := core.PlaygroundNew(playground)
+	if err != nil {
 		log.Fatalf("Cannot create default playground. Got: %v", err)
 	}
+	log.Printf("DEBUG: Created playground with ID: %s and domain: %s\n", createdPlayground.Id, createdPlayground.Domain)
 
 	handlers.Bootstrap(core, e)
 	handlers.Register(nil)

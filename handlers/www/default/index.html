@@ -1,7 +1,8 @@
 <!doctype html>
 <html ng-app="DockerPlay" ng-controller="PlayController">
     <head>
-        <title>Docker Playground - Simple</title>
+        <title>Docker Playclouds - Active Session</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons" />
         <link rel="stylesheet" href="https://unpkg.com/angular-material@1.1.10/angular-material.min.css">
         <link rel="stylesheet" href="/assets/xterm/xterm.css" />
@@ -16,70 +17,308 @@
           gtag('config', 'UA-89019737-3');
         </script>
         <style>
-          /* Custom styles for simplified UI */
-          .simplified-header {
-            background: #3f51b5;
-            color: white;
-            padding: 16px;
+          /* Tutorials Dojo Blue Color Palette */
+          :root {
+            --primary-blue: #1e40af;
+            --secondary-blue: #3b82f6;
+            --light-blue: #dbeafe;
+            --dark-blue: #1e3a8a;
+            --accent-blue: #60a5fa;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+          }
+
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+
+          body {
+            font-family: 'Inter', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+          }
+
+          /* Modern Header */
+          .modern-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+          }
+
+          .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: none;
           }
+
+          .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+          }
+
+          .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+          }
+
           .session-info {
             display: flex;
             align-items: center;
             gap: 20px;
           }
-          .terminal-main {
-            height: calc(100vh - 80px);
-            padding: 0;
+
+          .session-status {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
           }
+
+          .session-status.timer {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+          }
+
+          .session-status.container-info {
+            background: rgba(96, 165, 250, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+          }
+
           .quick-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             align-items: center;
           }
-          .session-status {
-            background: rgba(255,255,255,0.1);
+
+          .action-button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--white);
             padding: 8px 16px;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 14px;
-          }
-          .instance-stats {
-            background: #f5f5f5;
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
-            gap: 20px;
+            align-items: center;
+            gap: 6px;
+            text-transform: none;
+            font-weight: 500;
+          }
+
+          .action-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+          }
+
+          .action-button.danger {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+          }
+
+          .action-button.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+          }
+
+          /* Instance Stats Bar */
+          .instance-stats {
+            background: linear-gradient(135deg, var(--white) 0%, var(--bg-light) 100%);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 30px;
             flex-wrap: wrap;
             align-items: center;
+            box-shadow: var(--shadow);
           }
+
           .stat-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            color: var(--text-dark);
+            background: var(--white);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            min-width: 140px;
+            transition: all 0.3s ease;
           }
+
+          .stat-item:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+            border-color: var(--light-blue);
+          }
+
+          .stat-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 16px;
+          }
+
+          .stat-content {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .stat-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+          }
+
+          .terminal-main {
+            height: calc(100vh - 180px);
+            padding: 0;
+          }
+
           .loading-screen {
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #fafafa;
+            background: var(--bg-light);
           }
-          /* File tab styles */
-          .file-tab {
-            padding: 8px 15px;
-            margin-right: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px 4px 0 0;
-            cursor: pointer;
-            white-space: nowrap;
-            background: #e0e0e0;
+
+          .loading-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
           }
-          .file-tab.active {
-            background: #fff;
+
+          .loading-subtitle {
+            color: var(--text-light);
+            margin-top: 1rem;
+          }
+
+          /* Port chips styling */
+          md-chips .md-chip {
+            background: var(--light-blue) !important;
+            color: var(--primary-blue) !important;
+            border-radius: 6px !important;
+          }
+
+          md-chips .md-chip a {
+            color: var(--primary-blue) !important;
+            text-decoration: none !important;
+            font-weight: 500 !important;
+          }
+
+          /* Connection status styling */
+          .connection-status {
+            background: var(--warning);
+            color: var(--white);
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 500;
+            border-radius: 0;
+          }
+
+          .upload-progress {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px 20px;
+            border-radius: 0;
+          }
+
+          /* Responsive Design */
+          @media (max-width: 768px) {
+            .session-info {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 10px;
+            }
+
+            .quick-actions {
+              flex-direction: column;
+              align-items: stretch;
+              gap: 8px;
+            }
+
+            .instance-stats {
+              flex-direction: column;
+              align-items: stretch;
+              gap: 15px;
+            }
+
+            .stat-item {
+              min-width: auto;
+            }
+
+            .terminal-main {
+              height: calc(100vh - 220px);
+            }
+          }
+
+          /* Override Material Design styles */
+          .md-button.md-raised {
+            background: rgba(255,255,255,0.2) !important;
+            color: var(--white) !important;
+            border: 1px solid rgba(255,255,255,0.3) !important;
+            border-radius: 8px !important;
+            text-transform: none !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+          }
+
+          .md-button.md-raised:hover {
+            background: rgba(255,255,255,0.3) !important;
+            transform: translateY(-1px) !important;
+          }
+
+          .md-button.md-warn.md-raised {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+          }
+
+          .md-button.md-warn.md-raised:hover {
+            background: rgba(239, 68, 68, 0.3) !important;
           }
         </style>
     </head>
@@ -87,77 +326,120 @@
 
         <!-- Session Expired Screen -->
         <div ng-if="!isAlive" class="loading-screen">
-            <h2>Session Expired</h2>
-            <p>Your Docker session has expired and all containers have been deleted.</p>
-            <md-button class="md-raised md-primary" href="/">Start New Session</md-button>
+            <div style="text-align: center;">
+                <div class="logo-icon" style="margin: 0 auto 2rem; width: 80px; height: 80px; font-size: 2.5rem;">🐳</div>
+                <h2 class="loading-title">Session Expired</h2>
+                <p>Your Docker session has expired and all containers have been deleted.</p>
+                <md-button class="md-raised md-primary" href="/" style="margin-top: 2rem;">Start New Session</md-button>
+            </div>
         </div>
 
         <!-- Disconnected/Loading Screen -->
         <div ng-if="!connected && isAlive" class="loading-screen">
-            <h2>Connecting to Docker Environment...</h2>
-            <md-progress-circular class="md-hue-2" md-diameter="40px"></md-progress-circular>
-            <p style="margin-top: 20px;">Setting up your containerized workspace</p>
+            <div style="text-align: center;">
+                <div class="logo-icon" style="margin: 0 auto 2rem; width: 80px; height: 80px; font-size: 2.5rem;">🐳</div>
+                <h2 class="loading-title">Connecting to Docker Environment...</h2>
+                <md-progress-circular class="md-hue-2" md-diameter="60px" style="margin: 2rem 0;"></md-progress-circular>
+                <p class="loading-subtitle">Setting up your containerized workspace</p>
+            </div>
         </div>
 
         <!-- Main Application -->
         <div ng-if="connected && isAlive" layout="column" style="height:100%;">
             
-            <!-- Simplified Header -->
-            <div class="simplified-header">
-                <div class="session-info">
-                    <h2 style="margin: 0;">🐳 Docker Playground</h2>
-                    <div class="session-status">
-                        <md-icon class="material-icons">access_time</md-icon>
-                        Session expires in: {{ttl}}
+            <!-- Modern Header -->
+            <div class="modern-header">
+                <div class="header-content">
+                    <div class="session-info">
+                        <div class="logo">
+                            <div class="logo-icon">🐳</div>
+                            <span>Docker Playclouds</span>
+                        </div>
+                        <div class="session-status timer">
+                            <md-icon class="material-icons" style="font-size: 16px;">access_time</md-icon>
+                            <span>{{ttl || 'Loading...'}}</span>
+                        </div>
+                        <div ng-if="instance" class="session-status container-info">
+                            <md-icon class="material-icons" style="font-size: 16px;">computer</md-icon>
+                            <span>{{instance.hostname}} ({{instance.ip}})</span>
+                        </div>
                     </div>
-                    <div ng-if="instance" class="session-status">
-                        <md-icon class="material-icons">computer</md-icon>
-                        Container: {{instance.hostname}} ({{instance.ip}})
+                    
+                    <div class="quick-actions">
+                        <md-button class="md-raised" ng-click="openPort(instance)" ng-if="instance">
+                            <md-icon class="material-icons" style="font-size: 16px;">open_in_new</md-icon>
+                            Open Port
+                        </md-button>
+                        <md-button class="md-raised" ng-click="openEditor(instance)" ng-if="instance">
+                            <md-icon class="material-icons" style="font-size: 16px;">edit</md-icon>
+                            Editor
+                        </md-button>
+                        <md-button class="md-warn md-raised" ng-click="closeSession()">
+                            <md-icon class="material-icons" style="font-size: 16px;">exit_to_app</md-icon>
+                            Close Session
+                        </md-button>
                     </div>
-                </div>
-                
-                <div class="quick-actions">
-                    <md-button class="md-raised" ng-click="openPort(instance)" ng-if="instance">
-                        <md-icon class="material-icons">open_in_new</md-icon>
-                        Open Port
-                    </md-button>
-                    <md-button class="md-raised" ng-click="openEditor(instance)" ng-if="instance">
-                        <md-icon class="material-icons">edit</md-icon>
-                        Editor
-                    </md-button>
-                    <md-button class="md-warn md-raised" ng-click="closeSession()">
-                        <md-icon class="material-icons">exit_to_app</md-icon>
-                        Close Session
-                    </md-button>
                 </div>
             </div>
 
             <!-- Instance Stats Bar -->
             <div class="instance-stats" ng-if="instance">
                 <div class="stat-item">
-                    <md-icon class="material-icons">memory</md-icon>
-                    <span>RAM: {{instance.mem || 'N/A'}}</span>
+                    <div class="stat-icon">
+                        <md-icon class="material-icons">memory</md-icon>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Memory</div>
+                        <div class="stat-value">{{getMemoryUsage() || 'Loading...'}}</div>
+                    </div>
                 </div>
                 <div class="stat-item">
-                    <md-icon class="material-icons">speed</md-icon>
-                    <span>CPU: {{instance.cpu || 'N/A'}}</span>
-                </div>
-                <div class="stat-item" ng-if="instance.ports.length">
-                    <md-icon class="material-icons">link</md-icon>
-                    <span>Exposed Ports:</span>
-                    <md-chips ng-model="instance.ports" readonly="true" md-removable="false">
-                        <md-chip-template>
-                            <a href="{{getProxyUrl(instance, $chip)}}" target="_blank">{{$chip}}</a>
-                        </md-chip-template>
-                    </md-chips>
+                    <div class="stat-icon">
+                        <md-icon class="material-icons">speed</md-icon>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">CPU Usage</div>
+                        <div class="stat-value">{{getCpuUsage() || 'Loading...'}}</div>
+                    </div>
                 </div>
                 <div class="stat-item">
-                    <md-icon class="material-icons">terminal</md-icon>
-                    <span>SSH: ssh {{instance.proxy_host}}@direct.{{host}}</span>
-                    <md-icon ngclipboard data-clipboard-text="ssh {{instance.proxy_host}}@direct.{{host}}" class="material-icons" style="cursor: pointer;">
-                        content_copy
-                        <md-tooltip>Copy SSH command</md-tooltip>
-                    </md-icon>
+                    <div class="stat-icon">
+                        <md-icon class="material-icons">storage</md-icon>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Container</div>
+                        <div class="stat-value">{{instance.name || 'docker-env'}}</div>
+                    </div>
+                </div>
+                <div class="stat-item" ng-if="instance.ports && instance.ports.length">
+                    <div class="stat-icon">
+                        <md-icon class="material-icons">link</md-icon>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Exposed Ports</div>
+                        <div class="stat-value">
+                            <md-chips ng-model="instance.ports" readonly="true" md-removable="false">
+                                <md-chip-template>
+                                    <a href="{{getProxyUrl(instance, $chip)}}" target="_blank">{{$chip}}</a>
+                                </md-chip-template>
+                            </md-chips>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <md-icon class="material-icons">terminal</md-icon>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">SSH Access</div>
+                        <div class="stat-value">
+                            <span style="font-size: 0.8rem;">ssh {{instance.proxy_host}}@direct.{{host}}</span>
+                            <md-icon ngclipboard data-clipboard-text="ssh {{instance.proxy_host}}@direct.{{host}}" class="material-icons" style="cursor: pointer; font-size: 14px; margin-left: 8px;">
+                                content_copy
+                                <md-tooltip>Copy SSH command</md-tooltip>
+                            </md-icon>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -170,7 +452,7 @@
                         ngf-multiple="true">
                 
                 <!-- Upload Progress -->
-                <div ng-show="uploadMessage" style="background: #fff3cd; padding: 10px; border-bottom: 1px solid #ffeaa7;">
+                <div ng-show="uploadMessage" class="upload-progress">
                     <md-progress-linear md-mode="determinate" value="{{uploadProgress}}"></md-progress-linear>
                     <div style="text-align: center; margin-top: 5px;">
                         <span>{{uploadMessage}}</span>
@@ -178,7 +460,8 @@
                 </div>
 
                 <!-- Connection Status -->
-                <div ng-show="instance && instance.status=='reconnect'" style="background: #ffeaa7; padding: 10px; text-align: center;">
+                <div ng-show="instance && instance.status=='reconnect'" class="connection-status">
+                    <md-icon class="material-icons" style="margin-right: 8px;">sync_problem</md-icon>
                     Connection lost. Reconnecting to terminal...
                 </div>
 

@@ -45,6 +45,8 @@ func (t *collectStats) Name() string {
 }
 
 func (t *collectStats) Run(ctx context.Context, instance *types.Instance) error {
+	log.Printf("DEBUG: Collecting stats for instance %s (SessionId: %s)\n", instance.Name, instance.SessionId)
+	
 	if instance.Type == "windows" {
 		host := router.EncodeHost(instance.SessionId, instance.IP, router.HostOpts{EncodedPort: 222})
 		req, err := http.NewRequest("GET", fmt.Sprintf("http://%s/stats", host), nil)
@@ -120,6 +122,7 @@ func (t *collectStats) Run(ctx context.Context, instance *types.Instance) error 
 	cpuPercent := calculateCPUPercentUnix(previousCPU, previousSystem, v)
 	stats.Cpu = fmt.Sprintf("%.2f%%", cpuPercent)
 
+	log.Printf("DEBUG: Emitting stats for instance %s: CPU=%s, MEM=%s\n", instance.Name, stats.Cpu, stats.Mem)
 	t.event.Emit(CollectStatsEvent, instance.SessionId, stats)
 	return nil
 }

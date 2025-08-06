@@ -26,7 +26,7 @@ func SessionTerminal(rw http.ResponseWriter, req *http.Request) {
 		log.Printf("No instance found for session %s: %v\n", sessionId, err)
 		rw.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(rw).Encode(map[string]string{
-			"error": "no_instance",
+			"error":   "no_instance",
 			"message": "No instance found for this session",
 		})
 		return
@@ -56,6 +56,6 @@ func SessionTerminalWS(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Use the existing WebSocket handler 
+	// Use the existing WebSocket handler
 	WSH(rw, req)
 }

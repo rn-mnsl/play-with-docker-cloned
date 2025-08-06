@@ -5,167 +5,573 @@
     <script crossorigin="anonymous" src="https://unpkg.com/angular-cookies@1.6.6/angular-cookies.min.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="A simplified Docker playground with instant container access">
-    <meta name="author" content="">
+    <meta name="description" content="Docker Playclouds - A simplified Docker playground with instant container access">
+    <meta name="author" content="Tutorials Dojo">
 
-    <title>Docker Playground - Simplified</title>
+    <title>Docker Playclouds - Modern Docker Learning Platform</title>
 
+    <!-- Modern Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons" />
+    
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.0.0-beta/dist/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 
-    <!-- Custom styles for this template -->
-    <link href="/assets/landing.css" rel="stylesheet">
-    
     <style>
-      .feature-highlight {
-        background: #f8f9fa;
-        border-left: 4px solid #007bff;
-        padding: 1rem;
-        margin: 1rem 0;
+      /* Tutorials Dojo Blue Color Palette */
+      :root {
+        --primary-blue: #1e40af;
+        --secondary-blue: #3b82f6;
+        --light-blue: #dbeafe;
+        --dark-blue: #1e3a8a;
+        --accent-blue: #60a5fa;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-light: #64748b;
+        --white: #ffffff;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       }
-      .workflow-step {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        text-align: center;
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-      .workflow-number {
-        background: #007bff;
-        color: white;
-        border-radius: 50%;
+
+      body {
+        font-family: 'Inter', 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: var(--text-dark);
+        background: var(--bg-light);
+      }
+
+      /* Modern Header */
+      .modern-header {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: var(--white);
+        padding: 1rem 0;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .logo-icon {
         width: 40px;
         height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+        margin: 0;
+      }
+
+      .nav-links a {
+        color: var(--white);
+        text-decoration: none;
+        font-weight: 500;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        opacity: 0.8;
+        color: var(--white);
+        text-decoration: none;
+      }
+
+      /* Hero Section */
+      .hero-section {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 50%, var(--accent-blue) 100%);
+        color: var(--white);
+        padding: 5rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-title {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(45deg, #ffffff, #dbeafe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        font-weight: 400;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .docker-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        backdrop-filter: blur(10px);
+      }
+
+      /* CTA Buttons */
+      .cta-button {
+        background: var(--white);
+        color: var(--primary-blue);
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-lg);
+        text-transform: none;
         display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        color: var(--primary-blue);
+        text-decoration: none;
+      }
+
+      .cta-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--white);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        margin-left: 1rem;
+      }
+
+      .cta-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: var(--white);
+      }
+
+      /* Info Section */
+      .info-section {
+        padding: 4rem 0;
+        background: var(--white);
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 3rem;
+        color: var(--text-dark);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+
+      .feature-card {
+        background: var(--bg-light);
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--light-blue);
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: var(--white);
+        font-size: 1.5rem;
+      }
+
+      .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+      }
+
+      .feature-description {
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+
+      /* How it Works Section */
+      .how-it-works {
+        background: var(--bg-light);
+        padding: 4rem 0;
+      }
+
+      .workflow-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .workflow-step {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+      }
+
+      .workflow-step:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .workflow-number {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        margin: 0 auto 1rem;
+      }
+
+      .workflow-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+      }
+
+      /* Login Section */
+      .login-section {
+        background: var(--white);
+        padding: 3rem 0;
+        text-align: center;
+      }
+
+      .login-card {
+        background: var(--bg-light);
+        padding: 2rem;
+        border-radius: 16px;
+        max-width: 400px;
+        margin: 0 auto;
+        box-shadow: var(--shadow);
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--text-dark);
+        color: var(--white);
+        padding: 2rem 0;
+        text-align: center;
+        margin-top: 0;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1.1rem;
+        }
+
+        .cta-secondary {
+          margin-left: 0;
+          margin-top: 1rem;
+        }
+
+        .nav-links {
+          display: none;
+        }
+      }
+
+      /* Hide default container styles */
+      .container {
+        max-width: none;
+        padding: 0;
+      }
+
+      /* Override bootstrap styles */
+      .jumbotron {
+        margin-bottom: 0;
+        padding: 0;
+        background: none;
+        border-radius: 0;
+      }
+
+      .header.clearfix {
+        display: none;
+      }
+
+      .row.marketing {
+        display: none;
       }
     </style>
   </head>
 
-  <body>
+  <body ng-cloak>
 
-    <div class="container">
-      <div class="header clearfix">
-        <nav>
-          <ul class="nav nav-pills float-right">
-            <li class="nav-item">
-              <a class="nav-link" href="https://github.com/play-with-docker/play-with-docker">Contribute</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-
-      <div class="jumbotron" ng-cloak>
-        <img src="https://galaxyproject.github.io/training-material/topics/admin/images/docker_whale.png" />
-        <h1 class="display-3">🐳 Docker Playground</h1>
-        <p class="lead">Instant Docker environment in your browser - simplified and streamlined</p>
-        
-        <div class="feature-highlight">
-          <h5>✨ <strong>New Simplified Experience</strong></h5>
-          <p class="mb-0"><strong>One session = One container</strong> - Start instantly with a ready-to-use Docker environment!</p>
-        </div>
-        
-        <div ng-hide="loggedIn" class="btn-group" role="group">
-          <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Login to Start
-          </button>
-          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-              <a ng-repeat="provider in providers" class="dropdown-item" ng-click="login(provider)">{{provider}}</a>
+    <!-- Modern Header -->
+    <header class="modern-header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <div class="logo-icon">🐳</div>
+            <span>Docker Playclouds</span>
           </div>
+          <ul class="nav-links">
+            <li><a href="https://tutorials-dojo.com" target="_blank">Tutorials Dojo</a></li>
+            <li><a href="https://github.com/play-with-docker/play-with-docker" target="_blank">Contribute</a></li>
+          </ul>
         </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-content">
+          <div class="docker-icon">🐳</div>
+          <h1 class="hero-title">Try the Docker Labs</h1>
+          <p class="hero-subtitle">
+            Experience hands-on Docker learning with our simplified, single-instance playground. 
+            Perfect for beginners and professionals looking to practice Docker commands in a safe, isolated environment.
+          </p>
+          
+          <div ng-hide="loggedIn">
+            <div class="btn-group" role="group">
+              <button id="btnGroupDrop1" type="button" class="cta-button dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="material-icons" style="font-size: 18px;">login</i>
+                Login to Start
+              </button>
+              <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                  <a ng-repeat="provider in providers" class="dropdown-item" ng-click="login(provider)">{{provider}}</a>
+              </div>
+            </div>
+          </div>
+          
+          <form id="landingForm" method="POST" action="/" style="display: inline;">
+              <div ng-show="loggedIn">
+                <a class="cta-button" href="#" ng-click="start()" role="button">
+                  <i class="material-icons" style="font-size: 18px;">rocket_launch</i>
+                  Launch Docker Environment
+                </a>
+                <a class="cta-button cta-secondary" href="#features">
+                  <i class="material-icons" style="font-size: 18px;">info</i>
+                  Learn More
+                </a>
+              </div>
+              <input id="stack" type="hidden" name="stack" value=""/>
+              <input id="stack_name" type="hidden" name="stack_name" value=""/>
+              <input id="image_name" type="hidden" name="image_name" value=""/>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="info-section">
+      <div class="container">
+        <h2 class="section-title">Simplified Docker Learning Experience</h2>
         
-        <form id="landingForm" method="POST" action="/">
-            <p ng-show="loggedIn">
-              <a class="btn btn-lg btn-success" href="#" ng-click="start()" role="button">
-                🚀 Launch Docker Environment
-              </a>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="material-icons">settings</i>
+            </div>
+            <h3 class="feature-title">One Instance, Focused Learning</h3>
+            <p class="feature-description">
+              Unlike traditional multi-instance environments, Playclouds provides a single, 
+              dedicated Docker container per session. This streamlined approach eliminates 
+              complexity and lets you focus on learning Docker fundamentals.
             </p>
-            <input id="stack" type="hidden" name="stack" value=""/>
-            <input id="stack_name" type="hidden" name="stack_name" value=""/>
-            <input id="image_name" type="hidden" name="image_name" value=""/>
-        </form>
-      </div>
+          </div>
 
-      <div class="row marketing">
-        <div class="col-lg-12">
-          <h3>🎯 How It Works</h3>
-          <div class="row">
-            <div class="col-md-4">
-              <div class="workflow-step">
-                <div class="workflow-number">1</div>
-                <h5>Click Launch</h5>
-                <p>Start your session and get an instant Docker container</p>
-              </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="material-icons">timer</i>
             </div>
-            <div class="col-md-4">
-              <div class="workflow-step">
-                <div class="workflow-number">2</div>
-                <h5>Code & Build</h5>
-                <p>Use the terminal to run Docker commands, build images, and deploy apps</p>
-              </div>
+            <h3 class="feature-title">Instant Setup</h3>
+            <p class="feature-description">
+              No lengthy configuration or multiple container management. Your Docker 
+              environment is ready in seconds with pre-configured settings optimized 
+              for learning and experimentation.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="material-icons">security</i>
             </div>
-            <div class="col-md-4">
-              <div class="workflow-step">
-                <div class="workflow-number">3</div>
-                <h5>Learn & Experiment</h5>
-                <p>Experiment freely - your environment is isolated and temporary</p>
-              </div>
+            <h3 class="feature-title">Safe Sandbox Environment</h3>
+            <p class="feature-description">
+              Practice Docker commands, build images, and run containers in a completely 
+              isolated environment. Make mistakes, experiment freely, and learn without 
+              worrying about affecting your local system.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="material-icons">terminal</i>
             </div>
+            <h3 class="feature-title">Full Terminal Access</h3>
+            <p class="feature-description">
+              Access a complete Linux terminal with Docker pre-installed. Run all standard 
+              Docker commands, create Dockerfiles, manage volumes, networks, and explore 
+              container orchestration concepts.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="material-icons">school</i>
+            </div>
+            <h3 class="feature-title">Perfect for Tutorials</h3>
+            <p class="feature-description">
+              Designed specifically for educational purposes and tutorial content. 
+              Follow along with Tutorials Dojo courses or use it for your own 
+              Docker learning journey with confidence.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="material-icons">cloud</i>
+            </div>
+            <h3 class="feature-title">No Local Installation</h3>
+            <p class="feature-description">
+              Access Docker functionality from any device with a web browser. 
+              No need to install Docker locally or worry about system compatibility. 
+              Start learning immediately from anywhere.
+            </p>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="row marketing">
-        <div class="col-lg-6">
-          <h4>🚀 Key Features</h4>
-          <ul>
-            <li><strong>Instant Access:</strong> Container ready in seconds</li>
-            <li><strong>Full Docker Environment:</strong> Complete Docker-in-Docker setup</li>
-            <li><strong>Web Terminal:</strong> No SSH or local setup required</li>
-            <li><strong>File Upload:</strong> Drag & drop files into your container</li>
-            <li><strong>Port Forwarding:</strong> Test web apps with exposed ports</li>
-            <li><strong>Temporary & Safe:</strong> Perfect for learning and experimentation</li>
-          </ul>
-        </div>
-        <div class="col-lg-6">
-          <h4>💡 Perfect For</h4>
-          <ul>
-            <li>Learning Docker basics</li>
-            <li>Testing Dockerfiles and images</li>
-            <li>Prototyping containerized applications</li>
-            <li>Docker workshops and tutorials</li>
-            <li>Quick Docker experiments</li>
-            <li>Teaching containerization concepts</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="row marketing">
-        <div class="col-lg-12">
-          <h4>📚 About This Platform</h4>
-          <p>This is a simplified version of Play with Docker (PWD), originally created by <a href="https://www.twitter.com/marcosnils">Marcos Liljedhal</a> and <a href="https://www.twitter.com/xetorthio">Jonathan Leibiusky</a> and sponsored by Docker Inc.</p>
-          
-          <p>Our streamlined version provides a <strong>one session = one container</strong> experience, making it easier to get started with Docker without the complexity of managing multiple instances. It uses Docker-in-Docker (DinD) technology to provide a full containerized environment directly in your browser.</p>
-          
-          <div class="feature-highlight">
-            <h6><strong>🔄 Simplified Workflow</strong></h6>
-            <p class="mb-1"><strong>Before:</strong> Create Session → Add Instance → Connect to Terminal</p>
-            <p class="mb-0"><strong>Now:</strong> Create Session → Instant Terminal Access</p>
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+      <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="workflow-grid">
+          <div class="workflow-step">
+            <div class="workflow-number">1</div>
+            <h4 class="workflow-title">Click Launch</h4>
+            <p>Start your session and get an instant Docker container ready for use</p>
           </div>
-          
-          <p><strong>Session Duration:</strong> Each session lasts up to 2 hours and is automatically cleaned up.</p>
+          <div class="workflow-step">
+            <div class="workflow-number">2</div>
+            <h4 class="workflow-title">Code & Build</h4>
+            <p>Use the terminal to run Docker commands, build images, and deploy applications</p>
+          </div>
+          <div class="workflow-step">
+            <div class="workflow-number">3</div>
+            <h4 class="workflow-title">Learn & Experiment</h4>
+            <p>Experiment freely - your environment is isolated, temporary, and perfect for learning</p>
+          </div>
         </div>
       </div>
+    </section>
 
-      <footer class="footer">
-        <p>&copy; Docker Playground Simplified 2025 | Based on Play with Docker</p>
-      </footer>
+    <!-- About Section -->
+    <section class="info-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center">
+            <h2 class="section-title">About Docker Playclouds</h2>
+            <p class="lead">This is a simplified version of Play with Docker (PWD), originally created by 
+            <a href="https://www.twitter.com/marcosnils" target="_blank">Marcos Liljedhal</a> and 
+            <a href="https://www.twitter.com/xetorthio" target="_blank">Jonathan Leibiusky</a> and sponsored by Docker Inc.</p>
+            
+            <p>Our streamlined version provides a <strong>one session = one container</strong> experience, making it easier to get started with Docker without the complexity of managing multiple instances. It uses Docker-in-Docker (DinD) technology to provide a full containerized environment directly in your browser.</p>
+            
+            <div class="feature-card" style="max-width: 600px; margin: 2rem auto;">
+              <h5><strong>🔄 Simplified Workflow</strong></h5>
+              <p><strong>Before:</strong> Create Session → Add Instance → Connect to Terminal</p>
+              <p class="mb-0"><strong>Now:</strong> Create Session → Instant Terminal Access</p>
+            </div>
+            
+            <p><strong>Session Duration:</strong> Each session lasts up to 2 hours and is automatically cleaned up.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Docker Playclouds by Tutorials Dojo | Based on Play with Docker</p>
+      </div>
+    </footer>
 
     <script crossorigin="anonymous" src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script crossorigin="anonymous" src="https://unpkg.com/popper.js@1.11.0/dist/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>

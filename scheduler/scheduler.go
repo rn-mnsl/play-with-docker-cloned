@@ -75,7 +75,9 @@ func (s *scheduler) updatePlaygrounds() {
 	defer s.mx.Unlock()
 
 	log.Printf("Updating playgrounds configuration\n")
+	log.Printf("DEBUG: Current playgrounds in map: %d\n", len(s.playgrounds))
 	for playgroundId, _ := range s.playgrounds {
+		log.Printf("DEBUG: Processing playground %s\n", playgroundId)
 		playground, err := s.storage.PlaygroundGet(playgroundId)
 		if err != nil {
 			log.Printf("Could not find playground %s\n", playgroundId)
@@ -84,6 +86,7 @@ func (s *scheduler) updatePlaygrounds() {
 		s.playgrounds[playgroundId] = playground
 		matchedTasks := s.getMatchedTasks(playground)
 		s.playgroundTasks[playground.Id] = matchedTasks
+		log.Printf("DEBUG: Playground %s now has %d tasks assigned\n", playground.Id, len(matchedTasks))
 	}
 }
 
@@ -98,22 +101,31 @@ func (s *scheduler) schedulePlaygroundsUpdate() {
 }
 
 func (s *scheduler) getMatchedTasks(playground *types.Playground) []Task {
+	log.Printf("DEBUG: Matching tasks for playground %s with tasks config: %v\n", playground.Id, playground.Tasks)
 	matchedTasks := []Task{}
 	for _, expr := range playground.Tasks {
+		log.Printf("DEBUG: Checking expression '%s' against available tasks\n", expr)
 		for _, task := range s.tasks {
 			if expr == task.Name() {
 				matchedTasks = append(matchedTasks, task)
+				log.Printf("DEBUG: Matched task by exact name: %s\n", task.Name())
 				continue
 			}
 			matched, err := regexp.MatchString(expr, task.Name())
 			if err != nil {
+				log.Printf("DEBUG: Regex error for expression '%s': %v\n", expr, err)
 				continue
 			}
 			if matched {
 				matchedTasks = append(matchedTasks, task)
+				log.Printf("DEBUG: Matched task by regex: %s\n", task.Name())
 				continue
 			}
 		}
+	}
+	log.Printf("DEBUG: Total matched tasks for playground %s: %d\n", playground.Id, len(matchedTasks))
+	for _, task := range matchedTasks {
+		log.Printf("DEBUG: - %s\n", task.Name())
 	}
 	return matchedTasks
 }
@@ -158,6 +170,7 @@ func (s *scheduler) processInstance(ctx context.Context, si *scheduledInstance) 
 					continue
 				}
 				for _, task := range s.getTasks(si.playgroundId) {
+					log.Printf("DEBUG: Running task %s on instance %s\n", task.Name(), si.instance.Name)
 					err := task.Run(ctx, si.instance)
 					if err != nil {
 						log.Printf("Error running task %s on instance %s. Got: %v\n", task.Name(), si.instance.Name, err)
@@ -312,6 +325,16 @@ func (s *scheduler) Start() error {
 		s.mx.Lock()
 
 		log.Printf("EVENT: Playground New %s\n", playgroundId)
+
+		// Add the new playground to the map
+		playground, err := s.storage.PlaygroundGet(playgroundId)
+		if err != nil {
+			log.Printf("Could not find new playground %s\n", playgroundId)
+			s.mx.Unlock()
+			return
+		}
+		s.playgrounds[playground.Id] = playground
+		log.Printf("DEBUG: Added playground %s to scheduler map\n", playground.Id)
 
 		// Don't defer lock as updatePlaygrounds will lock again
 		s.mx.Unlock()

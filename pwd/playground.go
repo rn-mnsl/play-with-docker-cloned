@@ -2,6 +2,7 @@ package pwd
 
 import (
 	"log"
+	"strings"
 
 	"github.com/play-with-docker/play-with-docker/event"
 	"github.com/play-with-docker/play-with-docker/pwd/types"
@@ -29,8 +30,21 @@ func (p *pwd) PlaygroundGet(id string) *types.Playground {
 }
 
 func (p *pwd) PlaygroundFindByDomain(domain string) *types.Playground {
+	// First try with the exact domain
 	id := uuid.NewV5(uuid.NamespaceOID, domain).String()
-	return p.PlaygroundGet(id)
+	if playground := p.PlaygroundGet(id); playground != nil {
+		return playground
+	}
+	
+	// If that fails and domain contains a port, try without port
+	if strings.Contains(domain, ":") {
+		parts := strings.Split(domain, ":")
+		domainWithoutPort := parts[0]
+		id = uuid.NewV5(uuid.NamespaceOID, domainWithoutPort).String()
+		return p.PlaygroundGet(id)
+	}
+	
+	return nil
 }
 
 func (p *pwd) PlaygroundList() ([]*types.Playground, error) {

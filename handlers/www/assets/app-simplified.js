@@ -20,6 +20,48 @@
     $scope.currentFile = null;
     $scope.fileCounter = 1;
     
+    // Stats display functions
+    $scope.getCpuUsage = function() {
+        console.log('getCpuUsage called, instance:', $scope.instance);
+        if (!$scope.instance) {
+            return 'No Container';
+        }
+        console.log('CPU value:', $scope.instance.cpu, 'type:', typeof $scope.instance.cpu);
+        if ($scope.instance.cpu === undefined || $scope.instance.cpu === null) {
+            return 'N/A';
+        }
+        // CPU is typically a percentage value
+        var cpu = parseFloat($scope.instance.cpu);
+        if (isNaN(cpu)) {
+            return 'Invalid';
+        }
+        return cpu.toFixed(1) + '%';
+    };
+    
+    $scope.getMemoryUsage = function() {
+        console.log('getMemoryUsage called, instance:', $scope.instance);
+        if (!$scope.instance) {
+            return 'No Container';
+        }
+        console.log('Memory value:', $scope.instance.mem, 'type:', typeof $scope.instance.mem);
+        if ($scope.instance.mem === undefined || $scope.instance.mem === null) {
+            return 'N/A';
+        }
+        // Memory might come in different formats, handle common cases
+        var mem = $scope.instance.mem;
+        if (typeof mem === 'string') {
+            return mem;
+        } else if (typeof mem === 'number') {
+            // Convert bytes to MB if it's a large number (assume bytes)
+            if (mem > 1024 * 1024) {
+                return (mem / (1024 * 1024)).toFixed(1) + ' MB';
+            } else {
+                return mem.toFixed(1) + ' MB';
+            }
+        }
+        return mem.toString();
+    };
+    
     // File upload functionality
     $scope.uploadFiles = function (files, invalidFiles) {
         if (!$scope.instance) {
@@ -540,9 +582,12 @@ if __name__ == "__main__":
         });
 
         $scope.socket.on('instance stats', function(stats) {
+            console.log('Received instance stats:', stats);
             if ($scope.instance && $scope.instance.name === stats.instance) {
+                console.log('Updating stats for instance:', $scope.instance.name);
                 $scope.instance.mem = stats.mem;
                 $scope.instance.cpu = stats.cpu;
+                console.log('Updated instance object:', $scope.instance);
                 $scope.$apply();
             }
         });
@@ -585,6 +630,7 @@ if __name__ == "__main__":
 
         // Session timer
         $scope.socket.on('session timer', function(time) {
+            console.log('Received session timer:', time);
             $scope.ttl = time;
             $scope.$apply();
         });
