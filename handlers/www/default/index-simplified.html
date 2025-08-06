@@ -1,0 +1,241 @@
+<!doctype html>
+<html ng-app="DockerPlay" ng-controller="PlayController">
+    <head>
+        <title>Docker Playground - Simple</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons" />
+        <link rel="stylesheet" href="https://unpkg.com/angular-material@1.1.10/angular-material.min.css">
+        <link rel="stylesheet" href="/assets/xterm/xterm.css" />
+        <link rel="stylesheet" href="/assets/xterm/addons/fullscreen/fullscreen.css" />
+        <link rel="stylesheet" href="/assets/style.css" />
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-89019737-3"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'UA-89019737-3');
+        </script>
+        <style>
+          /* Custom styles for simplified UI */
+          .simplified-header {
+            background: #3f51b5;
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .session-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+          }
+          .terminal-main {
+            height: calc(100vh - 80px);
+            padding: 0;
+          }
+          .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+          }
+          .session-status {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+          }
+          .instance-stats {
+            background: #f5f5f5;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+          }
+          .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .loading-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fafafa;
+          }
+          /* File tab styles */
+          .file-tab {
+            padding: 8px 15px;
+            margin-right: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            white-space: nowrap;
+            background: #e0e0e0;
+          }
+          .file-tab.active {
+            background: #fff;
+          }
+        </style>
+    </head>
+    <body ng-cloak>
+
+        <!-- Session Expired Screen -->
+        <div ng-if="!isAlive" class="loading-screen">
+            <h2>Session Expired</h2>
+            <p>Your Docker session has expired and all containers have been deleted.</p>
+            <md-button class="md-raised md-primary" href="/">Start New Session</md-button>
+        </div>
+
+        <!-- Disconnected/Loading Screen -->
+        <div ng-if="!connected && isAlive" class="loading-screen">
+            <h2>Connecting to Docker Environment...</h2>
+            <md-progress-circular class="md-hue-2" md-diameter="40px"></md-progress-circular>
+            <p style="margin-top: 20px;">Setting up your containerized workspace</p>
+        </div>
+
+        <!-- Main Application -->
+        <div ng-if="connected && isAlive" layout="column" style="height:100%;">
+            
+            <!-- Simplified Header -->
+            <div class="simplified-header">
+                <div class="session-info">
+                    <h2 style="margin: 0;">🐳 Docker Playground</h2>
+                    <div class="session-status">
+                        <md-icon class="material-icons">access_time</md-icon>
+                        Session expires in: {{ttl}}
+                    </div>
+                    <div ng-if="instance" class="session-status">
+                        <md-icon class="material-icons">computer</md-icon>
+                        Container: {{instance.hostname}} ({{instance.ip}})
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <md-button class="md-raised" ng-click="openPort(instance)" ng-if="instance">
+                        <md-icon class="material-icons">open_in_new</md-icon>
+                        Open Port
+                    </md-button>
+                    <md-button class="md-raised" ng-click="openEditor(instance)" ng-if="instance">
+                        <md-icon class="material-icons">edit</md-icon>
+                        Editor
+                    </md-button>
+                    <md-button class="md-warn md-raised" ng-click="closeSession()">
+                        <md-icon class="material-icons">exit_to_app</md-icon>
+                        Close Session
+                    </md-button>
+                </div>
+            </div>
+
+            <!-- Instance Stats Bar -->
+            <div class="instance-stats" ng-if="instance">
+                <div class="stat-item">
+                    <md-icon class="material-icons">memory</md-icon>
+                    <span>RAM: {{instance.mem || 'N/A'}}</span>
+                </div>
+                <div class="stat-item">
+                    <md-icon class="material-icons">speed</md-icon>
+                    <span>CPU: {{instance.cpu || 'N/A'}}</span>
+                </div>
+                <div class="stat-item" ng-if="instance.ports.length">
+                    <md-icon class="material-icons">link</md-icon>
+                    <span>Exposed Ports:</span>
+                    <md-chips ng-model="instance.ports" readonly="true" md-removable="false">
+                        <md-chip-template>
+                            <a href="{{getProxyUrl(instance, $chip)}}" target="_blank">{{$chip}}</a>
+                        </md-chip-template>
+                    </md-chips>
+                </div>
+                <div class="stat-item">
+                    <md-icon class="material-icons">terminal</md-icon>
+                    <span>SSH: ssh {{instance.proxy_host}}@direct.{{host}}</span>
+                    <md-icon ngclipboard data-clipboard-text="ssh {{instance.proxy_host}}@direct.{{host}}" class="material-icons" style="cursor: pointer;">
+                        content_copy
+                        <md-tooltip>Copy SSH command</md-tooltip>
+                    </md-icon>
+                </div>
+            </div>
+
+            <!-- Main Terminal Area -->
+            <md-content class="terminal-main" 
+                        ngf-drop 
+                        ngf-drag-over-class="'dragover'" 
+                        ngf-max-size="100000000" 
+                        ngf-change="uploadFiles($files, $invalidFiles)" 
+                        ngf-multiple="true">
+                
+                <!-- Upload Progress -->
+                <div ng-show="uploadMessage" style="background: #fff3cd; padding: 10px; border-bottom: 1px solid #ffeaa7;">
+                    <md-progress-linear md-mode="determinate" value="{{uploadProgress}}"></md-progress-linear>
+                    <div style="text-align: center; margin-top: 5px;">
+                        <span>{{uploadMessage}}</span>
+                    </div>
+                </div>
+
+                <!-- Connection Status -->
+                <div ng-show="instance && instance.status=='reconnect'" style="background: #ffeaa7; padding: 10px; text-align: center;">
+                    Connection lost. Reconnecting to terminal...
+                </div>
+
+                <!-- Terminal Container -->
+                <div ng-if="instance" class="terminal-container container-{{instance.name}}" style="height: 100%;">
+                    <div class="terminal-instance" id="terminal-{{instance.name}}" style="height: 100%;"></div>
+                </div>
+
+                <!-- No Instance State -->
+                <div ng-if="!instance" style="height: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                    <md-progress-circular md-diameter="50px"></md-progress-circular>
+                    <h3 style="margin-top: 20px;">Setting up your Docker container...</h3>
+                    <p>This may take a few moments</p>
+                </div>
+
+            </md-content>
+        </div>
+
+        <!-- Modal Dialogs -->
+        <div id="builderDialog" style="display: none;">
+            <md-dialog aria-label="Stack Builder" style="max-width: 80%; max-height: 80%;">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <h2>Setting up your Docker environment...</h2>
+                        <span flex></span>
+                        <md-button class="md-icon-button" ng-click="closeSessionBuilder()">
+                            <md-icon class="material-icons">close</md-icon>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+                <md-dialog-content style="max-width: 100%; height: 400px;">
+                    <div class="terminal-builder terminal-container">
+                        <div class="terminal-instance" id="terminal-builder"></div>
+                    </div>
+                </md-dialog-content>
+            </md-dialog>
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://unpkg.com/angular@1.7.8/angular.min.js"></script>
+        <script src="https://unpkg.com/angular-animate@1.7.8/angular-animate.min.js"></script>
+        <script src="https://unpkg.com/angular-aria@1.7.8/angular-aria.min.js"></script>
+        <script src="https://unpkg.com/angular-messages@1.7.8/angular-messages.min.js"></script>
+        <script src="https://unpkg.com/angular-material@1.1.10/angular-material.min.js"></script>
+        <script src="/assets/xterm/xterm.js"></script>
+        <script src="/assets/xterm/addons/attach/attach.js"></script>
+        <script src="/assets/xterm/addons/fit/fit.js"></script>
+        <script src="/assets/xterm/addons/webLinks/webLinks.js"></script>
+        <script src="/assets/xterm/addons/search/search.js"></script>
+        <script src="/assets/xterm/addons/fullscreen/fullscreen.js"></script>
+        <script src="/assets/xterm/addons/zmodem/zmodem.js"></script>
+        <script src="https://unpkg.com/ng-file-upload@12.2.13/dist/ng-file-upload.min.js"></script>
+        <script src="https://unpkg.com/ngclipboard@2.0.0/dist/ngclipboard.min.js"></script>
+        <script src="https://unpkg.com/reconnectingwebsocket@1.0.0/reconnecting-websocket.min.js"></script>
+        <script src="/assets/setup-xterm.js"></script>
+        <script src="/assets/attach.js"></script>
+        <script src="/assets/app-simplified.js"></script>
+
+    </body>
+</html>

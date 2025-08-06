@@ -86,10 +86,6 @@ func Register(extend HandlerExtender) {
 	corsRouter.HandleFunc("/sessions/{sessionId}", CloseSession).Methods("DELETE")
 	corsRouter.HandleFunc("/sessions/{sessionId}/setup", SessionSetup).Methods("POST")
 	
-	// ONE SESSION = ONE INSTANCE: New simplified routes
-	corsRouter.HandleFunc("/sessions/{sessionId}/terminal", SessionTerminal).Methods("GET")
-	r.HandleFunc("/sessions/{sessionId}/ws", SessionTerminalWS)
-	
 	// Original instance routes (still available but discouraged for new usage)
 	corsRouter.HandleFunc("/sessions/{sessionId}/instances", NewInstance).Methods("POST")
 	corsRouter.HandleFunc("/sessions/{sessionId}/instances/{instanceName}/uploads", FileUpload).Methods("POST")

@@ -23,6 +23,8 @@ services:
             # mount the box mounted shared folder to the container
             - $PWD:/go/src
             - sessions:/pwd
+        ports:
+            - "3000:3000"
     l2:
         container_name: l2
         # use the latest golang image

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  playground:
+    build: .
+    container_name: docker-playground
+    ports:
+      - "3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - sessions:/tmp/sessions
+    environment:
+      - PWD_SAVE_PATH=/tmp/sessions
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - playground-network
+
+volumes:
+  sessions:
+
+networks:
+  playground-network:
+    driver: bridge

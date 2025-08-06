@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="PWDLanding" ng-controller="LoginController">
+  <head>
+    <script crossorigin="anonymous" src="https://unpkg.com/angular@1.6.6/angular.min.js"></script>
+    <script crossorigin="anonymous" src="https://unpkg.com/angular-cookies@1.6.6/angular-cookies.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="A simplified Docker playground with instant container access">
+    <meta name="author" content="">
+
+    <title>Docker Playground - Simplified</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.0.0-beta/dist/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/landing.css" rel="stylesheet">
+    
+    <style>
+      .feature-highlight {
+        background: #f8f9fa;
+        border-left: 4px solid #007bff;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .workflow-step {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        text-align: center;
+      }
+      .workflow-number {
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills float-right">
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/play-with-docker/play-with-docker">Contribute</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="jumbotron" ng-cloak>
+        <img src="https://galaxyproject.github.io/training-material/topics/admin/images/docker_whale.png" />
+        <h1 class="display-3">🐳 Docker Playground</h1>
+        <p class="lead">Instant Docker environment in your browser - simplified and streamlined</p>
+        
+        <div class="feature-highlight">
+          <h5>✨ <strong>New Simplified Experience</strong></h5>
+          <p class="mb-0"><strong>One session = One container</strong> - Start instantly with a ready-to-use Docker environment!</p>
+        </div>
+        
+        <div ng-hide="loggedIn" class="btn-group" role="group">
+          <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Login to Start
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a ng-repeat="provider in providers" class="dropdown-item" ng-click="login(provider)">{{provider}}</a>
+          </div>
+        </div>
+        
+        <form id="landingForm" method="POST" action="/">
+            <p ng-show="loggedIn">
+              <a class="btn btn-lg btn-success" href="#" ng-click="start()" role="button">
+                🚀 Launch Docker Environment
+              </a>
+            </p>
+            <input id="stack" type="hidden" name="stack" value=""/>
+            <input id="stack_name" type="hidden" name="stack_name" value=""/>
+            <input id="image_name" type="hidden" name="image_name" value=""/>
+        </form>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-12">
+          <h3>🎯 How It Works</h3>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="workflow-step">
+                <div class="workflow-number">1</div>
+                <h5>Click Launch</h5>
+                <p>Start your session and get an instant Docker container</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="workflow-step">
+                <div class="workflow-number">2</div>
+                <h5>Code & Build</h5>
+                <p>Use the terminal to run Docker commands, build images, and deploy apps</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="workflow-step">
+                <div class="workflow-number">3</div>
+                <h5>Learn & Experiment</h5>
+                <p>Experiment freely - your environment is isolated and temporary</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4>🚀 Key Features</h4>
+          <ul>
+            <li><strong>Instant Access:</strong> Container ready in seconds</li>
+            <li><strong>Full Docker Environment:</strong> Complete Docker-in-Docker setup</li>
+            <li><strong>Web Terminal:</strong> No SSH or local setup required</li>
+            <li><strong>File Upload:</strong> Drag & drop files into your container</li>
+            <li><strong>Port Forwarding:</strong> Test web apps with exposed ports</li>
+            <li><strong>Temporary & Safe:</strong> Perfect for learning and experimentation</li>
+          </ul>
+        </div>
+        <div class="col-lg-6">
+          <h4>💡 Perfect For</h4>
+          <ul>
+            <li>Learning Docker basics</li>
+            <li>Testing Dockerfiles and images</li>
+            <li>Prototyping containerized applications</li>
+            <li>Docker workshops and tutorials</li>
+            <li>Quick Docker experiments</li>
+            <li>Teaching containerization concepts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-12">
+          <h4>📚 About This Platform</h4>
+          <p>This is a simplified version of Play with Docker (PWD), originally created by <a href="https://www.twitter.com/marcosnils">Marcos Liljedhal</a> and <a href="https://www.twitter.com/xetorthio">Jonathan Leibiusky</a> and sponsored by Docker Inc.</p>
+          
+          <p>Our streamlined version provides a <strong>one session = one container</strong> experience, making it easier to get started with Docker without the complexity of managing multiple instances. It uses Docker-in-Docker (DinD) technology to provide a full containerized environment directly in your browser.</p>
+          
+          <div class="feature-highlight">
+            <h6><strong>🔄 Simplified Workflow</strong></h6>
+            <p class="mb-1"><strong>Before:</strong> Create Session → Add Instance → Connect to Terminal</p>
+            <p class="mb-0"><strong>Now:</strong> Create Session → Instant Terminal Access</p>
+          </div>
+          
+          <p><strong>Session Duration:</strong> Each session lasts up to 2 hours and is automatically cleaned up.</p>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <p>&copy; Docker Playground Simplified 2025 | Based on Play with Docker</p>
+      </footer>
+
+    </div>
+
+    <script crossorigin="anonymous" src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script crossorigin="anonymous" src="https://unpkg.com/popper.js@1.11.0/dist/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script crossorigin="anonymous" src="https://unpkg.com/bootstrap@4.0.0-beta/dist/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script>
+        angular.module('PWDLanding', [])
+            .controller('LoginController', ['$scope', '$http', '$window', function($scope, $http, $window) {
+                $scope.providers = [];
+                $scope.loggedIn = false;
+                $scope.user = null;
+
+                function checkLoggedIn() {
+                    $http({
+                        method: 'GET',
+                        url: '/users/me'
+                    }).then(function(response) {
+                        $scope.user = response.data;
+                        $scope.loggedIn = true;
+                    }, function(response) {
+                        console.log('Not logged in or no auth required');
+                        $scope.user = null;
+                        $scope.loggedIn = false;
+                    });
+                }
+
+                checkLoggedIn();
+
+                $http({
+                    method: 'GET',
+                    url: '/oauth/providers'
+                }).then(function(response) {
+                    $scope.providers = response.data;
+                    if ($scope.providers.length == 0) {
+                        // No authentication required
+                        $scope.loggedIn = true;
+                    }
+                }, function(response) {
+                    console.log('No auth providers configured - allowing direct access');
+                    $scope.loggedIn = true;
+                });
+
+                $scope.login = function(provider) {
+                    var width = screen.width*0.6;
+                    var height = 620;
+                    var x = screen.width/2 - width/2;
+                    var y = screen.height/2 - height/2;
+                    $window.open('/oauth/providers/' + provider + '/login', 'PWDLogin', 'width='+width+',height='+height+',left='+x+',top='+y);
+                    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+                    var eventer = window[eventMethod];
+                    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+                    eventer(messageEvent,function(e) {
+                      if (e.data === 'done') {
+                        checkLoggedIn();
+                      }
+                    }, false);
+                }
+
+                $scope.start = function() {
+                    function getParameterByName(name, url) {
+                        if (!url) url = window.location.href;
+                        name = name.replace(/[\[\]]/g, "\\$&");
+                        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                            results = regex.exec(url);
+                        if (!results) return null;
+                        if (!results[2]) return '';
+                        return decodeURIComponent(results[2].replace(/\+/g, " "));
+                    }
+
+                    var stack = getParameterByName('stack');
+                    if (stack) {
+                        document.getElementById('stack').value = stack;
+                    }
+                    var stackName = getParameterByName('stack_name');
+                    if (stackName) {
+                        document.getElementById('stack_name').value = stackName;
+                    }
+                    var imageName = getParameterByName('image_name');
+                    if (imageName) {
+                        document.getElementById('image_name').value = imageName;
+                    }
+                    document.getElementById('landingForm').submit();
+                }
+            }]);
+    </script>
+  </body>
+</html>

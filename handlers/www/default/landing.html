@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" ng-app="PWDLanding" ng-controller="LoginController">
   <head>
@@ -6,16 +5,45 @@
     <script crossorigin="anonymous" src="https://unpkg.com/angular-cookies@1.6.6/angular-cookies.min.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
+    <meta name="description" content="A simplified Docker playground with instant container access">
     <meta name="author" content="">
 
-    <title>Play with Docker</title>
+    <title>Docker Playground - Simplified</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.0.0-beta/dist/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
     <link href="/assets/landing.css" rel="stylesheet">
+    
+    <style>
+      .feature-highlight {
+        background: #f8f9fa;
+        border-left: 4px solid #007bff;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .workflow-step {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        text-align: center;
+      }
+      .workflow-number {
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+    </style>
   </head>
 
   <body>
@@ -33,33 +61,108 @@
 
       <div class="jumbotron" ng-cloak>
         <img src="https://galaxyproject.github.io/training-material/topics/admin/images/docker_whale.png" />
-        <h1 class="display-3">Play with Docker</h1>
-        <p class="lead">A simple, interactive and fun playground to learn Docker</p>
+        <h1 class="display-3">🐳 Docker Playground</h1>
+        <p class="lead">Instant Docker environment in your browser - simplified and streamlined</p>
+        
+        <div class="feature-highlight">
+          <h5>✨ <strong>New Simplified Experience</strong></h5>
+          <p class="mb-0"><strong>One session = One container</strong> - Start instantly with a ready-to-use Docker environment!</p>
+        </div>
+        
         <div ng-hide="loggedIn" class="btn-group" role="group">
           <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Login
+            Login to Start
           </button>
           <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
               <a ng-repeat="provider in providers" class="dropdown-item" ng-click="login(provider)">{{provider}}</a>
           </div>
         </div>
+        
         <form id="landingForm" method="POST" action="/">
-            <p ng-show="loggedIn"><a class="btn btn-lg btn-success" href="#" ng-click="start()" role="button">Start</a></p>
-                <input id="stack" type="hidden" name="stack" value=""/>
-                <input id="stack_name" type="hidden" name="stack_name" value=""/>
-                <input id="image_name" type="hidden" name="image_name" value=""/>
+            <p ng-show="loggedIn">
+              <a class="btn btn-lg btn-success" href="#" ng-click="start()" role="button">
+                🚀 Launch Docker Environment
+              </a>
+            </p>
+            <input id="stack" type="hidden" name="stack" value=""/>
+            <input id="stack_name" type="hidden" name="stack_name" value=""/>
+            <input id="image_name" type="hidden" name="image_name" value=""/>
         </form>
       </div>
 
       <div class="row marketing">
         <div class="col-lg-12">
-            <p>Play with Docker (PWD) is a project hacked by <a href="https://www.twitter.com/marcosnils">Marcos Liljedhal</a> and <a href="https://www.twitter.com/xetorthio">Jonathan Leibiusky</a> and sponsored by Docker Inc.</p>
-            <p>PWD is a Docker playground which allows users to run Docker commands in a matter of seconds. It gives the experience of having a free Alpine Linux Virtual Machine in browser, where you can build and run Docker containers and even create clusters in <a href="https://docs.docker.com/engine/swarm/">Docker Swarm Mode</a>. Under the hood Docker-in-Docker (DinD) is used to give the effect of multiple VMs/PCs. In addition to the playground, PWD also includes a training site composed of a large set of Docker labs and quizzes from beginner to advanced level available at <a href="http://training.play-with-docker.com/">training.play-with-docker.com</a>.</p>
+          <h3>🎯 How It Works</h3>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="workflow-step">
+                <div class="workflow-number">1</div>
+                <h5>Click Launch</h5>
+                <p>Start your session and get an instant Docker container</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="workflow-step">
+                <div class="workflow-number">2</div>
+                <h5>Code & Build</h5>
+                <p>Use the terminal to run Docker commands, build images, and deploy apps</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="workflow-step">
+                <div class="workflow-number">3</div>
+                <h5>Learn & Experiment</h5>
+                <p>Experiment freely - your environment is isolated and temporary</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4>🚀 Key Features</h4>
+          <ul>
+            <li><strong>Instant Access:</strong> Container ready in seconds</li>
+            <li><strong>Full Docker Environment:</strong> Complete Docker-in-Docker setup</li>
+            <li><strong>Web Terminal:</strong> No SSH or local setup required</li>
+            <li><strong>File Upload:</strong> Drag & drop files into your container</li>
+            <li><strong>Port Forwarding:</strong> Test web apps with exposed ports</li>
+            <li><strong>Temporary & Safe:</strong> Perfect for learning and experimentation</li>
+          </ul>
+        </div>
+        <div class="col-lg-6">
+          <h4>💡 Perfect For</h4>
+          <ul>
+            <li>Learning Docker basics</li>
+            <li>Testing Dockerfiles and images</li>
+            <li>Prototyping containerized applications</li>
+            <li>Docker workshops and tutorials</li>
+            <li>Quick Docker experiments</li>
+            <li>Teaching containerization concepts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-12">
+          <h4>📚 About This Platform</h4>
+          <p>This is a simplified version of Play with Docker (PWD), originally created by <a href="https://www.twitter.com/marcosnils">Marcos Liljedhal</a> and <a href="https://www.twitter.com/xetorthio">Jonathan Leibiusky</a> and sponsored by Docker Inc.</p>
+          
+          <p>Our streamlined version provides a <strong>one session = one container</strong> experience, making it easier to get started with Docker without the complexity of managing multiple instances. It uses Docker-in-Docker (DinD) technology to provide a full containerized environment directly in your browser.</p>
+          
+          <div class="feature-highlight">
+            <h6><strong>🔄 Simplified Workflow</strong></h6>
+            <p class="mb-1"><strong>Before:</strong> Create Session → Add Instance → Connect to Terminal</p>
+            <p class="mb-0"><strong>Now:</strong> Create Session → Instant Terminal Access</p>
+          </div>
+          
+          <p><strong>Session Duration:</strong> Each session lasts up to 2 hours and is automatically cleaned up.</p>
         </div>
       </div>
 
       <footer class="footer">
-        <p>&copy; Play with Docker 2017 - 2025</p>
+        <p>&copy; Docker Playground Simplified 2025 | Based on Play with Docker</p>
       </footer>
 
     </div>
@@ -82,7 +185,7 @@
                         $scope.user = response.data;
                         $scope.loggedIn = true;
                     }, function(response) {
-                        console.log('ERROR', response);
+                        console.log('Not logged in or no auth required');
                         $scope.user = null;
                         $scope.loggedIn = false;
                     });
@@ -96,16 +199,16 @@
                 }).then(function(response) {
                     $scope.providers = response.data;
                     if ($scope.providers.length == 0) {
+                        // No authentication required
                         $scope.loggedIn = true;
                     }
                 }, function(response) {
-                    console.log('ERROR', response);
+                    console.log('No auth providers configured - allowing direct access');
+                    $scope.loggedIn = true;
                 });
-
 
                 $scope.login = function(provider) {
                     var width = screen.width*0.6;
-                    // fixed height as the login window is not responsive
                     var height = 620;
                     var x = screen.width/2 - width/2;
                     var y = screen.height/2 - height/2;
@@ -113,7 +216,6 @@
                     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
                     var eventer = window[eventMethod];
                     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-                    // Listen to message from child window
                     eventer(messageEvent,function(e) {
                       if (e.data === 'done') {
                         checkLoggedIn();
@@ -150,4 +252,3 @@
     </script>
   </body>
 </html>
-
