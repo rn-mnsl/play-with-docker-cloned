@@ -19,6 +19,168 @@
     $scope.openFiles = [];
     $scope.currentFile = null;
     $scope.fileCounter = 1;
+
+    // Cheat Sheet data
+    $scope.cheatSheet = [
+        {
+            id: 'verify',
+            title: 'Getting Started',
+            subtitle: 'Check version, info and hello-world',
+            commands: [
+                { title: 'Docker version', description: 'Check client and server version', command: 'docker version', explainer: 'Shows the Docker client and server versions and API compatibility.', sampleOutput: 'Client: Docker Engine - Community\n Version:           24.x\nServer: Docker Engine - Community\n Engine:\n  Version:          24.x' },
+                { title: 'Docker info', description: 'Detailed information about Docker and system', command: 'docker info', explainer: 'Displays system-wide information such as number of containers, images, storage driver, and cgroup details.', sampleOutput: 'Containers: 0\n Images: 2\n Storage Driver: overlay2\n Logging Driver: json-file' },
+                { title: 'Hello-world test', description: 'Run the classic hello-world image to verify setup', command: 'docker run --rm hello-world', explainer: 'Runs a minimal image that prints a welcome message and exits, verifying pulls and runs work.', sampleOutput: 'Hello from Docker!\nThis message shows that your installation appears to be working correctly.' },
+                { title: 'System cleanup', description: 'Remove unused images and containers', command: 'docker system prune -f', explainer: 'Removes all unused containers, networks, and dangling images to free up space.', sampleOutput: 'Deleted Containers:\nabc123...\nTotal reclaimed space: 1.2GB' }
+            ]
+        },
+        {
+            id: 'images',
+            title: 'Working with Images',
+            subtitle: 'Pull, list, build, and manage images',
+            commands: [
+                { title: 'List images', description: 'Show all local images', command: 'docker images', explainer: 'Lists locally cached images with REPOSITORY, TAG, and SIZE columns.', sampleOutput: 'REPOSITORY   TAG       IMAGE ID       CREATED      SIZE\nalpine       latest    1b8b...        2 weeks ago  5.6MB' },
+                { title: 'Pull Alpine Linux', description: 'Download a small Linux image', command: 'docker pull alpine:latest', explainer: 'Fetches the latest Alpine Linux image from Docker Hub.', sampleOutput: 'latest: Pulling from library/alpine\nDigest: sha256:...\nStatus: Downloaded newer image for alpine:latest' },
+                { title: 'Pull Ubuntu', description: 'Download Ubuntu image', command: 'docker pull ubuntu:20.04', explainer: 'Downloads a specific version of Ubuntu for containers that need more packages.', sampleOutput: '20.04: Pulling from library/ubuntu\nDigest: sha256:...\nStatus: Downloaded newer image for ubuntu:20.04' },
+                { title: 'Pull Python runtime', description: 'Download Python 3.9 image', command: 'docker pull python:3.9-slim', explainer: 'Gets a Python runtime environment for running Python applications.', sampleOutput: '3.9-slim: Pulling from library/python\nDigest: sha256:...\nStatus: Downloaded newer image for python:3.9-slim' },
+                { title: 'Search Docker Hub', description: 'Search for nginx images', command: 'docker search nginx', explainer: 'Searches Docker Hub for images matching the query term.', sampleOutput: 'NAME       DESCRIPTION                     STARS     OFFICIAL   AUTOMATED\nnginx      Official build of Nginx         15000     [OK]' },
+                { title: 'Inspect image details', description: 'Show metadata for alpine', command: 'docker inspect alpine:latest', explainer: 'Prints detailed JSON metadata for the image including layers, environment variables, and configuration.', sampleOutput: '[\n  {\n    "Id": "sha256:...",\n    "RepoTags": [\n      "alpine:latest"' },
+                { title: 'Image history', description: 'Show image layer history', command: 'docker history alpine:latest', explainer: 'Shows how the image was built, layer by layer.', sampleOutput: 'IMAGE        CREATED      CREATED BY                      SIZE\n1b8b...      2 weeks ago  /bin/sh -c #(nop) CMD ["sh"]   0B' },
+                { title: 'Remove image', description: 'Delete an image', command: 'docker rmi alpine:latest', explainer: 'Removes an image from local storage to free space.', sampleOutput: 'Untagged: alpine:latest\nDeleted: sha256:...' }
+            ]
+        },
+        {
+            id: 'containers',
+            title: 'Container Operations',
+            subtitle: 'Run, manage, and interact with containers',
+            commands: [
+                { title: 'Run hello command', description: 'Start a container, print message, then exit', command: 'docker run --rm alpine:latest echo "Docker is working!"', explainer: 'Runs Alpine and executes echo; the container is removed after it exits.', sampleOutput: 'Docker is working!' },
+                { title: 'Interactive shell', description: 'Open a shell inside alpine (exit with Ctrl-D)', command: 'docker run -it --name mybox alpine:latest sh', explainer: 'Drops you into a shell inside the container; use exit or Ctrl-D to quit.', sampleOutput: '/ #' },
+                { title: 'Run in background', description: 'Start a long-running process', command: 'docker run -d --name background-task alpine:latest sleep 3600', explainer: 'Starts a container in detached mode that will run for 1 hour.', sampleOutput: 'abc123456789...' },
+                { title: 'List running containers', description: 'Show currently running containers', command: 'docker ps', explainer: 'Shows running containers with names, ports and status.', sampleOutput: 'CONTAINER ID   IMAGE           COMMAND     CREATED     STATUS     PORTS   NAMES\nabc123...      alpine:latest   "sleep 36"  2 min ago   Up 2 min           background-task' },
+                { title: 'List all containers', description: 'Show running and stopped containers', command: 'docker ps -a', explainer: 'Include stopped containers in the list.', sampleOutput: 'CONTAINER ID   IMAGE           COMMAND     CREATED     STATUS                     PORTS   NAMES\nabc123...      alpine:latest   "sleep 36"  2 min ago   Up 2 min                           background-task\ndef456...      alpine:latest   "echo hello" 5 min ago  Exited (0) 5 minutes ago           eager_pascal' },
+                { title: 'Execute command in running container', description: 'Run a command in existing container', command: 'docker exec -it mybox ls -la', explainer: 'Executes a command inside an already running container.', sampleOutput: 'total 56\ndrwxr-xr-x    1 root     root          4096 Jan  1 00:00 .\ndrwxr-xr-x    1 root     root          4096 Jan  1 00:00 ..' },
+                { title: 'View container logs', description: 'See output from a container', command: 'docker logs mybox', explainer: 'Shows the stdout/stderr output from a container.', sampleOutput: 'Docker is working!\nContainer started successfully' },
+                { title: 'Stop container', description: 'Stop the container named mybox', command: 'docker stop mybox', explainer: 'Gracefully stop a running container.', sampleOutput: 'mybox' },
+                { title: 'Start stopped container', description: 'Restart a stopped container', command: 'docker start mybox', explainer: 'Restarts a container that was previously stopped.', sampleOutput: 'mybox' },
+                { title: 'Remove container', description: 'Remove the container named mybox', command: 'docker rm mybox', explainer: 'Delete a stopped container to free resources.', sampleOutput: 'mybox' },
+                { title: 'Force remove running container', description: 'Stop and remove container in one command', command: 'docker rm -f mybox', explainer: 'Forcefully stops and removes a container.', sampleOutput: 'mybox' }
+            ]
+        },
+        {
+            id: 'files',
+            title: 'Files & Volumes',
+            subtitle: 'Mount volumes, copy files, and persist data',
+            commands: [
+                { title: 'Create and mount volume', description: 'Mount a host folder into container', command: 'mkdir -p ~/demo && docker run --rm -v ~/demo:/data alpine:latest sh -c "echo hi > /data/hello.txt && ls -l /data"', explainer: 'Creates a host folder and mounts it into /data inside the container, writes a file and lists it.', sampleOutput: '-rw-r--r--    1 root     root             3 Jan  1 00:00 hello.txt' },
+                { title: 'View created file', description: 'Confirm the file persisted on host', command: 'ls -l ~/demo && cat ~/demo/hello.txt', explainer: 'Back on the host namespace, verify the file persisted via the volume.', sampleOutput: '-rw-r--r-- 1 root root 3 Jan  1 00:00 hello.txt\nhi' },
+                { title: 'Copy file to container', description: 'Copy file from host to running container', command: 'echo "test content" > test.txt && docker cp test.txt mybox:/tmp/', explainer: 'Copies a file from the host filesystem into a running container.', sampleOutput: '' },
+                { title: 'Copy file from container', description: 'Copy file from container to host', command: 'docker cp mybox:/tmp/test.txt ./copied-test.txt', explainer: 'Copies a file from inside a container to the host filesystem.', sampleOutput: '' },
+                { title: 'Create named volume', description: 'Create a Docker-managed volume', command: 'docker volume create myvolume', explainer: 'Creates a named volume that Docker manages for data persistence.', sampleOutput: 'myvolume' },
+                { title: 'Use named volume', description: 'Mount named volume in container', command: 'docker run --rm -v myvolume:/app/data alpine:latest sh -c "echo persistent > /app/data/file.txt"', explainer: 'Mounts the named volume and writes data to it.', sampleOutput: '' },
+                { title: 'List volumes', description: 'Show all Docker volumes', command: 'docker volume ls', explainer: 'Lists all named volumes managed by Docker.', sampleOutput: 'DRIVER    VOLUME NAME\nlocal     myvolume' },
+                { title: 'Remove volume', description: 'Delete a named volume', command: 'docker volume rm myvolume', explainer: 'Removes a named volume and all its data.', sampleOutput: 'myvolume' }
+            ]
+        },
+        {
+            id: 'network',
+            title: 'Networking & Ports',
+            subtitle: 'Expose ports, connect containers',
+            commands: [
+                { title: 'Run HTTP server', description: 'Start NGINX on port 8080', command: 'docker run -d --name web -p 8080:80 nginx:alpine', explainer: 'Launches NGINX and maps container port 80 to host port 8080.', sampleOutput: 'abcd1234567890...' },
+                { title: 'Test HTTP server', description: 'Fetch the default page headers', command: 'curl -I localhost:8080', explainer: 'Uses curl to validate the server responds on the mapped port.', sampleOutput: 'HTTP/1.1 200 OK\nServer: nginx/1.21.x\nContent-Type: text/html' },
+                { title: 'Run Python web server', description: 'Simple Python HTTP server', command: 'docker run -d --name pyserver -p 8000:8000 python:3.9-slim python -m http.server 8000', explainer: 'Starts Python\'s built-in HTTP server on port 8000.', sampleOutput: 'def456789012...' },
+                { title: 'Show port mappings', description: 'List all port mappings', command: 'docker port web', explainer: 'Shows which host ports are mapped to container ports.', sampleOutput: '80/tcp -> 0.0.0.0:8080' },
+                { title: 'Create custom network', description: 'Create a Docker network', command: 'docker network create mynetwork', explainer: 'Creates a custom network for container communication.', sampleOutput: 'abc123456789...' },
+                { title: 'List networks', description: 'Show all Docker networks', command: 'docker network ls', explainer: 'Lists all available Docker networks.', sampleOutput: 'NETWORK ID     NAME        DRIVER    SCOPE\nabc123...      bridge      bridge    local\ndef456...      mynetwork   bridge    local' },
+                { title: 'Run container on network', description: 'Connect container to custom network', command: 'docker run -d --name app --network mynetwork alpine:latest sleep 3600', explainer: 'Starts a container connected to the custom network.', sampleOutput: 'ghi789012345...' },
+                { title: 'Stop and cleanup', description: 'Cleanup server containers', command: 'docker rm -f web pyserver', explainer: 'Force remove multiple containers to free resources and ports.', sampleOutput: 'web\npyserver' }
+            ]
+        },
+        {
+            id: 'build',
+            title: 'Building Images',
+            subtitle: 'Create custom images with Dockerfile',
+            commands: [
+                { title: 'Create simple Dockerfile', description: 'Write a basic Dockerfile', command: 'cat << EOF > Dockerfile\nFROM alpine:latest\nRUN apk add --no-cache curl\nCMD ["curl", "--version"]\nEOF', explainer: 'Creates a Dockerfile that adds curl to Alpine Linux.', sampleOutput: '' },
+                { title: 'Build custom image', description: 'Build image from Dockerfile', command: 'docker build -t mycurl:latest .', explainer: 'Builds a Docker image from the Dockerfile in current directory.', sampleOutput: 'Sending build context to Docker daemon...\nStep 1/3 : FROM alpine:latest\nStep 2/3 : RUN apk add --no-cache curl\nStep 3/3 : CMD ["curl", "--version"]\nSuccessfully built abc123...\nSuccessfully tagged mycurl:latest' },
+                { title: 'Run custom image', description: 'Test the built image', command: 'docker run --rm mycurl:latest', explainer: 'Runs the custom image to test it works correctly.', sampleOutput: 'curl 7.80.0 (x86_64-alpine-linux-musl)' },
+                { title: 'Create Python app Dockerfile', description: 'Dockerfile for Python app', command: 'cat << EOF > Dockerfile\nFROM python:3.9-slim\nWORKDIR /app\nRUN pip install flask\nCOPY . .\nEXPOSE 5000\nCMD ["python", "-c", "from flask import Flask; app=Flask(__name__); app.route(\'/\')(lambda: \'Hello Docker!\'); app.run(host=\'0.0.0.0\')"]\nEOF', explainer: 'Creates a Dockerfile for a simple Flask web application.', sampleOutput: '' },
+                { title: 'Build multi-stage image', description: 'Build with multiple stages', command: 'docker build -t myapp:latest .', explainer: 'Builds the Python Flask application image.', sampleOutput: 'Sending build context to Docker daemon...\nSuccessfully tagged myapp:latest' },
+                { title: 'Tag image for registry', description: 'Tag image with version', command: 'docker tag myapp:latest myapp:v1.0', explainer: 'Creates an additional tag for the same image.', sampleOutput: '' }
+            ]
+        },
+        {
+            id: 'monitoring',
+            title: 'Monitoring & Debugging',
+            subtitle: 'Monitor performance and troubleshoot',
+            commands: [
+                { title: 'Container resource usage', description: 'Show CPU, memory usage in real-time', command: 'docker stats', explainer: 'Displays live resource usage statistics for all running containers.', sampleOutput: 'CONTAINER ID   NAME    CPU %   MEM USAGE/LIMIT   MEM %   NET I/O     BLOCK I/O\nabc123...      web     0.00%   2.5MiB / 1GiB     0.25%   1.2kB/0B    0B/0B' },
+                { title: 'Inspect container config', description: 'Show detailed container information', command: 'docker inspect mybox', explainer: 'Returns detailed JSON information about a container\'s configuration and state.', sampleOutput: '[\n  {\n    "Id": "abc123...",\n    "Created": "2024-01-01T00:00:00Z",\n    "State": {\n      "Status": "running"' },
+                { title: 'Follow container logs', description: 'Stream logs in real-time', command: 'docker logs -f web', explainer: 'Continuously streams new log output from a container.', sampleOutput: '127.0.0.1 - - [01/Jan/2024:00:00:00 +0000] "GET / HTTP/1.1" 200 612' },
+                { title: 'Show processes in container', description: 'List running processes', command: 'docker top mybox', explainer: 'Shows running processes inside a container.', sampleOutput: 'PID    USER     TIME   COMMAND\n1      root     0:00   sh\n15     root     0:00   sleep 3600' },
+                { title: 'Container filesystem changes', description: 'Show file changes since start', command: 'docker diff mybox', explainer: 'Shows what files have been added, changed, or deleted in the container.', sampleOutput: 'A /tmp\nA /tmp/test.txt\nC /etc' },
+                { title: 'Export container filesystem', description: 'Export container as tar', command: 'docker export mybox > mycontainer.tar', explainer: 'Exports the entire container filesystem as a tar archive.', sampleOutput: '' },
+                { title: 'Get container IP address', description: 'Show container network info', command: 'docker inspect -f "{{.NetworkSettings.IPAddress}}" mybox', explainer: 'Extracts just the IP address from container inspection.', sampleOutput: '172.17.0.2' }
+            ]
+        }
+    ];
+    $scope.selectedCheatCategoryId = 'verify';
+
+    $scope.openCheatSheet = function() {
+        $mdDialog.show({
+            templateUrl: 'cheatSheetDialog.html',
+            parent: angular.element(document.body),
+            clickOutsideToClose: true,
+            scope: $scope,
+            preserveScope: true
+        });
+    };
+
+    $scope.closeCheatSheet = function() {
+        $mdDialog.hide();
+    };
+
+    $scope.setCheatCategory = function(id) {
+        $scope.selectedCheatCategoryId = id;
+    };
+
+    $scope.getCheatCommands = function() {
+        var cat = ($scope.cheatSheet || []).find(function(c){ return c.id === $scope.selectedCheatCategoryId; });
+        return cat ? cat.commands : [];
+    };
+
+    // Send a command to the terminal (adds a trailing newline)
+    $scope.runCommand = function(command) {
+        if (!$scope.instance) {
+            $scope.showAlert('No Container', 'Please wait for your Docker container to be ready.');
+            return;
+        }
+        try {
+            var cmd = command.endsWith('\n') ? command : command + '\n';
+            $scope.socket.emit('instance terminal in', $scope.instance.name, cmd);
+        } catch (e) {
+            $log.error('Failed to run command', e);
+        }
+    };
+
+        // Clipboard notifications (requires ngclipboard)
+        $scope.onCopied = function(e) {
+                $mdDialog.show(
+                    $mdDialog.alert().clickOutsideToClose(true)
+                        .title('Copied!')
+                        .textContent('Command copied to clipboard.')
+                        .ok('OK')
+                );
+        };
+        $scope.onCopyError = function(e) {
+                $mdDialog.show(
+                    $mdDialog.alert().clickOutsideToClose(true)
+                        .title('Copy failed')
+                        .textContent('Your browser blocked clipboard access. Please select the text and copy manually.')
+                        .ok('OK')
+                );
+        };
+
     
     // Stats display functions
     $scope.getCpuUsage = function() {

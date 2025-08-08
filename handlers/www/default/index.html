@@ -218,11 +218,38 @@
 
           .loading-screen {
             height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             background: var(--bg-light);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+          }
+
+          .loading-content {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+          }
+
+          /* Loading animation */
+          @keyframes pulse {
+            0% {
+              transform: scale(1);
+              box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            }
+            50% {
+              transform: scale(1.05);
+              box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+            }
+            100% {
+              transform: scale(1);
+              box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            }
           }
 
           .loading-title {
@@ -320,27 +347,70 @@
           .md-button.md-warn.md-raised:hover {
             background: rgba(239, 68, 68, 0.3) !important;
           }
+
+          /* Cheat Sheet Dialog Button Styles */
+          .cheat-sheet-dialog .md-button.md-raised {
+            background: var(--white) !important;
+            color: var(--text-dark) !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+          }
+
+          .cheat-sheet-dialog .md-button.md-raised:hover {
+            background: var(--bg-light) !important;
+            border-color: var(--light-blue) !important;
+            transform: translateY(-1px) !important;
+          }
+
+          .cheat-sheet-dialog .md-button.md-primary.md-raised {
+            background: var(--primary-blue) !important;
+            color: var(--white) !important;
+            border-color: var(--primary-blue) !important;
+          }
+
+          .cheat-sheet-dialog .md-button.md-primary.md-raised:hover {
+            background: var(--dark-blue) !important;
+            border-color: var(--dark-blue) !important;
+          }
+
+          /* Force left alignment for cheat sheet dialog */
+          .cheat-sheet-dialog {
+            text-align: left !important;
+          }
+
+          .cheat-sheet-dialog md-dialog-content {
+            text-align: left !important;
+            direction: ltr !important;
+          }
+
+          .cheat-sheet-dialog .cmd-card {
+            text-align: left !important;
+          }
+
+          .cheat-sheet-dialog * {
+            box-sizing: border-box;
+          }
         </style>
     </head>
     <body ng-cloak>
 
         <!-- Session Expired Screen -->
         <div ng-if="!isAlive" class="loading-screen">
-            <div style="text-align: center;">
-                <div class="logo-icon" style="margin: 0 auto 2rem; width: 80px; height: 80px; font-size: 2.5rem;">🐳</div>
+            <div class="loading-content">
+                <div class="logo-icon" style="margin: 0 auto 2rem; width: 80px; height: 80px; font-size: 2.5rem; background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">🐳</div>
                 <h2 class="loading-title">Session Expired</h2>
-                <p>Your Docker session has expired and all containers have been deleted.</p>
-                <md-button class="md-raised md-primary" href="/" style="margin-top: 2rem;">Start New Session</md-button>
+                <p style="color: var(--text-light); font-size: 1.1rem; margin: 1rem 0;">Your Docker session has expired and all containers have been deleted.</p>
+                <md-button class="md-raised md-primary" href="/" style="margin-top: 2rem; background: var(--primary-blue) !important; color: white !important; border: none !important; padding: 12px 24px !important; font-size: 14px !important;">Start New Session</md-button>
             </div>
         </div>
 
         <!-- Disconnected/Loading Screen -->
         <div ng-if="!connected && isAlive" class="loading-screen">
-            <div style="text-align: center;">
-                <div class="logo-icon" style="margin: 0 auto 2rem; width: 80px; height: 80px; font-size: 2.5rem;">🐳</div>
+            <div class="loading-content">
+                <div class="logo-icon" style="margin: 0 auto 2rem; width: 80px; height: 80px; font-size: 2.5rem; background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); animation: pulse 2s infinite;">🐳</div>
                 <h2 class="loading-title">Connecting to Docker Environment...</h2>
-                <md-progress-circular class="md-hue-2" md-diameter="60px" style="margin: 2rem 0;"></md-progress-circular>
-                <p class="loading-subtitle">Setting up your containerized workspace</p>
+                <md-progress-circular class="md-hue-2" md-diameter="60px" style="margin: 2rem 0; color: var(--primary-blue) !important;"></md-progress-circular>
+                <p class="loading-subtitle" style="color: var(--text-light); font-size: 1.1rem;">Setting up your containerized workspace</p>
             </div>
         </div>
 
@@ -366,6 +436,10 @@
                     </div>
                     
                     <div class="quick-actions">
+            <md-button class="md-raised" ng-click="openCheatSheet()">
+              <md-icon class="material-icons" style="font-size: 16px;">menu_book</md-icon>
+              Cheat Sheet
+            </md-button>
                         <md-button class="md-raised" ng-click="openPort(instance)" ng-if="instance">
                             <md-icon class="material-icons" style="font-size: 16px;">open_in_new</md-icon>
                             Open Port
@@ -500,6 +574,114 @@
             </md-dialog>
         </div>
 
+    <!-- Docker Cheat Sheet Dialog Template -->
+    <script type="text/ng-template" id="cheatSheetDialog.html">
+      <md-dialog aria-label="Docker Cheat Sheet" class="cheat-sheet-dialog" style="max-width: 960px; width: 96vw; border-radius: 16px; overflow: hidden;">
+        <md-toolbar class="md-primary" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); border-radius: 16px 16px 0 0;">
+          <div class="md-toolbar-tools" style="padding: 0 24px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="background: rgba(255,255,255,0.2); padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <md-icon class="material-icons" style="font-size: 20px;">library_books</md-icon>
+              </div>
+              <h2 style="font-weight: 600; margin: 0;">Docker Cheat Sheet</h2>
+            </div>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="closeCheatSheet()" aria-label="Close" style="background: rgba(255,255,255,0.1); border-radius: 8px;">
+              <md-icon class="material-icons">close</md-icon>
+            </md-button>
+          </div>
+        </md-toolbar>
+        <md-dialog-content style="max-height: 70vh; padding: 0;">
+          <div layout="row" style="height: 60vh;">
+            <!-- Sidebar -->
+            <div style="width: 280px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-right: 1px solid #e2e8f0; overflow-y: auto;">
+              <div style="padding: 20px 0;">
+                <div style="padding: 0 20px; font-weight: 600; color: var(--text-dark); margin-bottom: 16px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; display: flex; justify-self: left;">
+                  <md-icon class="material-icons" style="font-size: 18px; margin-right: 8px; color: var(--primary-blue);">category</md-icon>
+                  Docker Topics
+                </div>
+                <div ng-repeat="cat in cheatSheet" ng-click="setCheatCategory(cat.id)" 
+                     ng-class="{'selected-category': cat.id === selectedCheatCategoryId}" 
+                     style="cursor: pointer; padding: 14px 18px; margin: 4px 12px; border-radius: 10px; transition: all 0.3s ease; position: relative;"
+                     ng-style="{'background': (cat.id === selectedCheatCategoryId) ? 'linear-gradient(135deg, var(--light-blue), #dbeafe)' : 'transparent', 'border': (cat.id === selectedCheatCategoryId) ? '1px solid var(--secondary-blue)' : '1px solid transparent', 'box-shadow': (cat.id === selectedCheatCategoryId) ? '0 2px 8px rgba(59, 130, 246, 0.15)' : 'none'}"
+                     onmouseover="if(this.getAttribute('ng-class').indexOf('selected-category') === -1) { this.style.background='rgba(59, 130, 246, 0.05)'; this.style.transform='translateX(4px)'; }" 
+                     onmouseout="if(this.getAttribute('ng-class').indexOf('selected-category') === -1) { this.style.background='transparent'; this.style.transform='translateX(0)'; }">
+                  <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px;">
+                    <div style="font-weight: 600; font-size: 14px; flex: 1;" ng-style="{color: (cat.id === selectedCheatCategoryId) ? 'var(--primary-blue)' : 'var(--text-dark)'}">{{cat.title}}</div>
+                    <md-icon ng-if="cat.id === selectedCheatCategoryId" class="material-icons" style="font-size: 16px; color: var(--primary-blue); margin-left: 8px; flex-shrink: 0;">check_circle</md-icon>
+                  </div>
+                  <div style="font-size: 12px; color: var(--text-light); line-height: 1.3;">{{cat.subtitle}}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; padding: 24px 28px; overflow-y: auto; background: white; text-align: left;">
+              <!-- Header Info -->
+              <div style="display: flex; justify-self: flex-start; margin-bottom: 20px; padding: 16px 20px; background: linear-gradient(135deg, #f8fafc, #e2e8f0); border-radius: 12px; border: 1px solid #e2e8f0;">
+                <md-icon class="material-icons" style="color: var(--primary-blue); margin-right: 12px; font-size: 24px; flex-shrink: 0;">tips_and_updates</md-icon>
+                <div style="font-weight: 600; font-size: 14px; text-align: left; color: var(--text-dark); white-space: nowrap;">Click <span style="color: var(--primary-blue);">Run</span> to execute or <span style="color: var(--secondary-blue);">Copy</span> to clipboard</div>
+              </div>
+              
+              <!-- Commands List -->
+              <div ng-repeat="cmd in getCheatCommands()" class="cmd-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 20px 0; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s ease;" 
+                   onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'; this.style.transform='translateY(-1px)'" 
+                   onmouseout="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)'; this.style.transform='translateY(0)'">
+                
+                <!-- Command Header -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                  <div style="flex: 1; min-width: 250px;">
+                    <div style="font-weight: 600; font-size: 16px; color: var(--text-dark); margin-bottom: 4px;">{{cmd.title}}</div>
+                    <div style="color: var(--text-light); font-size: 13px; line-height: 1.5;">{{cmd.description}}</div>
+                  </div>
+                  <div style="display: flex; gap: 10px; flex-shrink: 0;">
+                    <md-button class="md-raised" ngclipboard data-clipboard-text="{{cmd.command}}" ngclipboard-success="onCopied($event)" ngclipboard-error="onCopyError($event)" style="min-width: 80px;">
+                      <md-icon class="material-icons" style="font-size:16px; margin-right: 4px;">content_copy</md-icon>
+                      Copy
+                    </md-button>
+                    <md-button class="md-primary md-raised" ng-click="runCommand(cmd.command)" ng-disabled="!instance" style="min-width: 80px;">
+                      <md-icon class="material-icons" style="font-size:16px; margin-right: 4px;">play_arrow</md-icon>
+                      Run
+                    </md-button>
+                  </div>
+                </div>
+                
+                <!-- Two Column Layout: Terminal + Example Output -->
+                <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                  <!-- Left: Terminal Display -->
+                  <div style="flex: 1; min-width: 300px;">
+                    <div style="background: linear-gradient(135deg, #0b1021, #1e293b); color: #e5e7eb; padding: 16px 18px; border-radius: 10px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 13px; overflow-x: auto; border: 1px solid #374151; position: relative;">
+                      <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <div style="display: flex; gap: 6px; margin-right: 12px;">
+                          <div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div>
+                          <div style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></div>
+                          <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div>
+                        </div>
+                        <div style="color: #9ca3af; font-size: 11px; font-weight: 500;">Terminal</div>
+                      </div>
+                      <div style="color: #60a5fa;">$</div>
+                      <span style="color: #e5e7eb; margin-left: 8px;">{{cmd.command}}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Right: Example Output -->
+                  <div style="flex: 1; min-width: 300px;">
+                    <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 10px; padding: 16px; border-left: 4px solid var(--primary-blue);">
+                      <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <md-icon class="material-icons" style="font-size: 16px; color: var(--secondary-blue); margin-right: 6px;">code</md-icon>
+                        <div style="font-weight: 600; font-size: 13px; color: var(--text-dark);">Example output</div>
+                      </div>
+                      <pre style="background: #ffffff; border: 1px solid #e2e8f0; padding: 12px 14px; border-radius: 8px; font-size: 12px; color: #475569; margin: 0; overflow-x: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; line-height: 1.4;">{{cmd.sampleOutput}}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </md-dialog-content>
+      </md-dialog>
+    </script>
+
         <!-- Scripts -->
         <script src="https://unpkg.com/angular@1.7.8/angular.min.js"></script>
         <script src="https://unpkg.com/angular-animate@1.7.8/angular-animate.min.js"></script>
@@ -513,8 +695,9 @@
         <script src="/assets/xterm/addons/search/search.js"></script>
         <script src="/assets/xterm/addons/fullscreen/fullscreen.js"></script>
         <script src="/assets/xterm/addons/zmodem/zmodem.js"></script>
-        <script src="https://unpkg.com/ng-file-upload@12.2.13/dist/ng-file-upload.min.js"></script>
-        <script src="https://unpkg.com/ngclipboard@2.0.0/dist/ngclipboard.min.js"></script>
+  <script src="https://unpkg.com/ng-file-upload@12.2.13/dist/ng-file-upload.min.js"></script>
+  <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+  <script src="https://unpkg.com/ngclipboard@2.0.0/dist/ngclipboard.min.js"></script>
         <script src="https://unpkg.com/reconnectingwebsocket@1.0.0/reconnecting-websocket.min.js"></script>
         <script src="/assets/setup-xterm.js"></script>
         <script src="/assets/attach.js"></script>
